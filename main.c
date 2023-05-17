@@ -5,15 +5,47 @@
 #include "headers/buffer.h"
 
 typedef struct {
-	char *value;
+	Statement_type type; 
 } Statement;
 
 void prompt() {
 	printf(">>> ");
 }
 
-int perform_meta_command(Buffer *buffer) {
-	return META_COMMAND_SUCCESS;
+Statement_prep_status prepare_statement(Buffer *buffer, Statement *statement) {
+	if(strncmp(buffer->buffer, "insert", 6) == 0) {
+		statement->type = STATEMENT_INSERT;
+		return STATEMENT_PREP_SUCCESS;
+	}
+	if(strncmp(buffer->buffer, "select", 6) == 0) {
+		statement->type = STATEMENT_SELECT;
+		return STATEMENT_PREP_SUCCESS;
+	}
+
+	return STATEMENT_PREP_UNRECOGNIZED;
+}
+
+Meta_command_status perform_meta_command(Buffer *buffer) {
+	if(strcmp(buffer->buffer, ".exit") == 0) {
+		printf("Exiting...");
+		exit(EXIT_SUCCESS);
+	}
+	return META_COMMAND_UNRECOGNIZED;
+}
+
+void execute_statement(Statement *statement) {
+	switch (statement->type) {
+		case STATEMENT_INSERT:
+			printf("=> insert function called\n");
+			break;
+		
+		case STATEMENT_SELECT:
+			printf("=> select function called\n");
+			break;
+
+		default:
+			break;
+	}
 }
 
 int main(int argc, char** argv){
@@ -22,11 +54,6 @@ int main(int argc, char** argv){
 	while(1) {
 		prompt();
 		read_input(input_buffer);
-
-		if(strcmp(input_buffer->buffer, ".exit") == 0) {
-			printf("Exiting...");
-			exit(EXIT_SUCCESS);
-		}
 
 		if(input_buffer->buffer[0] == '.') {
 			switch(perform_meta_command(input_buffer)) {
@@ -37,13 +64,25 @@ int main(int argc, char** argv){
 
 				}
 				case META_COMMAND_UNRECOGNIZED: {
-					printf("Unrecognized meta command: %s\n", input_buffer->buffer);
-					break;
+					printf("Unrecognized Meta Command: %s\n", input_buffer->buffer);
+					continue;
 				}
-				default: continue;
+				default: break;
 			}
 		}
 
-		printf("Unrecognized Command: %s \n", input_buffer->buffer);
+		Statement statement;
+		switch (prepare_statement(input_buffer, &statement)) {
+			case STATEMENT_PREP_SUCCESS: {
+				break;
+			}
+			case STATEMENT_PREP_UNRECOGNIZED: {
+				printf("Unrecognized Keyword at start of '%s'\n", input_buffer->buffer);
+				continue;
+			}
+			default: break;
+		}
+
+		execute_statement(&statement);
 	}
 }

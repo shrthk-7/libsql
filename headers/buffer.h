@@ -15,6 +15,5 @@ typedef struct {
 Buffer 	*create_input_buffer();
 void 		read_input(Buffer *input_buffer);
 void 		close_input_buffer(Buffer *buffer);
-int 		perform_meta_command(Buffer *buffer);
 
 #endif
