@@ -11,15 +11,4 @@ typedef enum {
 	META_COMMAND_UNRECOGNIZED
 } Meta_command_status;
 
-typedef enum { 
-	STATEMENT_PREP_FAILURE, 
-	STATEMENT_PREP_SUCCESS,
-	STATEMENT_PREP_UNRECOGNIZED 
-} Statement_prep_status;
-
-typedef enum {
-	STATEMENT_INSERT,
-	STATEMENT_SELECT
-} Statement_type;
-
 #endif
